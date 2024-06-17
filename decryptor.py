@@ -10,6 +10,9 @@ file_name = ''
 decrypted_file_name = ''
 hex_list = []
 byte_count = 0
+with open('seed.txt', 'r', encoding='utf-8') as f:
+    seed = int(f.readline())
+encryptor.create_shuffle_mapping(seed)
 char_mapping = encryptor.reversed_char_mapping
 
 

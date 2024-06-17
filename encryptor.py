@@ -3,22 +3,28 @@ import tkinter as tk
 from tkinter import filedialog
 import os
 import threading
+import random
 
+ascii_chars = [chr(i) for i in range(256)]
+char_mapping = {}
+reversed_char_mapping = {}
+shuffled_chars = ascii_chars.copy()
 file_extension = ''
 file_name = ''
 encrypted_file_name = ''
 hex_list = []
 byte_count = 0
-char_mapping = {
-    'A': '!', 'B': '@', 'C': '#', 'D': '$', 'E': '%', 'F': '^', 'G': '&', 'H': '*', 'I': '(', 'J': ')', 'K': '-',
-    'L': '+', 'M': '[', 'N': ']', 'O': '{', 'P': '}', 'Q': ';', 'R': ':', 'S': ',', 'T': '.', 'U': '<', 'V': '>',
-    'W': '/', 'X': '?', 'Y': '`', 'Z': '~',
-    'a': '1', 'b': '2', 'c': '3', 'd': '4', 'e': '5', 'f': '6', 'g': '7', 'h': '8', 'i': '9', 'j': '0', 'k': 'a',
-    'l': 'b', 'm': 'c', 'n': 'd', 'o': 'e', 'p': 'f', 'q': 'g', 'r': 'h', 's': 'i', 't': 'j', 'u': 'k', 'v': 'l',
-    'w': 'm', 'x': 'n', 'y': 'o', 'z': 'p',
-    '0': 'q', '1': 'r', '2': 's', '3': 't', '4': 'u', '5': 'v', '6': 'w', '7': 'x', '8': 'y', '9': 'z'
-}
-reversed_char_mapping = {v: k for k, v in char_mapping.items()}
+
+
+def create_shuffle_mapping(seed):
+    global shuffled_chars
+    global char_mapping
+    global reversed_char_mapping
+    random.seed(seed)
+    random.shuffle(shuffled_chars)
+    char_mapping = {original: shuffled for original, shuffled in zip(ascii_chars, shuffled_chars)}
+    reversed_char_mapping = {v: k for k, v in char_mapping.items()}
+
 
 def get_file_extension(file_path):
     global file_extension
@@ -43,11 +49,18 @@ def hex_to_save_char(file_path):
 
 
 if __name__ == "__main__":
+    seed = int(input('Enter seed: '))
+    with open('seed.txt', 'w', encoding='utf-8') as f:
+        f.write(str(seed) + '\n')
     root = tk.Tk()
     root.withdraw()
     file_path = filedialog.askopenfilename()
+    thread0 = threading.Thread(target=create_shuffle_mapping, args=(seed,))
     thread1 = threading.Thread(target=get_file_extension, args=(file_path,))
     thread2 = threading.Thread(target=hex_to_save_char, args=(file_path,))
+
+    thread0.start()
+    thread0.join()
 
     thread1.start()
     thread2.start()
