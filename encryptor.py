@@ -54,18 +54,18 @@ if __name__ == "__main__":
         f.write(str(seed) + '\n')
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename()
+    file_paths = (filedialog.askopenfilenames())
     thread0 = threading.Thread(target=create_shuffle_mapping, args=(seed,))
-    thread1 = threading.Thread(target=get_file_extension, args=(file_path,))
-    thread2 = threading.Thread(target=hex_to_save_char, args=(file_path,))
-
     thread0.start()
     thread0.join()
+    for file_path in file_paths:
+        thread1 = threading.Thread(target=get_file_extension, args=(file_path,))
+        thread2 = threading.Thread(target=hex_to_save_char, args=(file_path,))
 
-    thread1.start()
-    thread2.start()
+        thread1.start()
+        thread2.start()
 
-    thread1.join()
-    thread2.join()
+        thread1.join()
+        thread2.join()
 
-    print(f'Finish writing {byte_count} characters to output')
+        print(f'\033[92mFinish writing \033[96m{byte_count/2} \033[92mbyte(s) to output.\033[0m')

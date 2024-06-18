@@ -41,14 +41,15 @@ def char_to_save_hex(file_path):
 if __name__ == "__main__":
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename()
-    thread1 = threading.Thread(target=get_original_filename, args=(file_path,))
-    thread2 = threading.Thread(target=char_to_save_hex, args=(file_path,))
+    file_paths = list(filedialog.askopenfilenames())
+    for file_path in file_paths:
+        thread1 = threading.Thread(target=get_original_filename, args=(file_path,))
+        thread2 = threading.Thread(target=char_to_save_hex, args=(file_path,))
 
-    thread1.start()
-    thread2.start()
+        thread1.start()
+        thread2.start()
 
-    thread1.join()
-    thread2.join()
+        thread1.join()
+        thread2.join()
 
-    print(f'Finish writing {byte_count} bytes to output')
+        print(f'\033[92mFinish writing \033[96m{byte_count/2} \033[92mbyte(s) to output.\033[0m')
